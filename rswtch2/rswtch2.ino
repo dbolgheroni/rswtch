@@ -137,7 +137,6 @@ void loop(void) {
          * packet we received */
         Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
         if (found) {
-            //Udp.write("0");
             Udp.print(0);
             found = false;
         } else {
