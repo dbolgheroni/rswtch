@@ -1,0 +1,71 @@
+#!/bin/sh
+
+cmd=$1
+channel=$2
+dest=$3
+
+port=9000
+
+usage() {
+    echo "usage: $0 cmd channel dest"
+    exit 1;
+}
+
+help() {
+    echo "commands:- desktop"
+}
+
+### COMMANDS
+up() {
+    typeset channel=$1
+    typeset rscmd="u${channel}"
+    typeset err=$(echo $rscmd | nc -4u -w1 $dest $port)
+    return $err
+}
+
+down() {
+    typeset channel=$1
+    typeset rscmd="d${channel}"
+    typeset err=$(echo $rscmd | nc -4u -w1 $dest $port)
+    return $err
+}
+
+toggle() {
+    typeset channel=$1
+    typeset rscmd="t${channel}"
+    typeset err=$(echo $rscmd | nc -4u -w1 $dest $port)
+    return $err
+}
+
+reset() {
+    typeset channel=$1
+    typeset rscmd="r${channel}"
+    typeset err=$(echo $rscmd | nc -4u -w2 $dest $port)
+    return $err
+
+}
+
+# check for missing arguments
+if [ -z $cmd -o -z $channel -o -z $dest ]; then
+    usage
+fi
+
+case $cmd in
+    up)
+        up $channel ;;
+    down)
+        down $channel ;;
+    toggle)
+        toggle $channel ;;
+    reset)
+        reset $channel ;;
+    help)
+        help ;;
+    *)
+        echo "$0: unknown command" ;;
+esac
+
+# check the return value of the firmware
+if [ $? -eq 1 ]; then
+    echo "$0: invalid channel"
+fi
