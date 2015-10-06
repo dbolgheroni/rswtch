@@ -46,7 +46,15 @@ reset() {
 }
 
 # check for missing arguments
-if [ -z $cmd -o -z $channel -o -z $dest ]; then
+if [ -z $cmd ]; then
+    usage
+fi
+
+if [ -z $channel ]; then
+    usage
+fi
+
+if [ -z $dest ]; then
     usage
 fi
 
