@@ -23,11 +23,12 @@ def up(ch):
 def down(ch):
     ch.write(1)
 
-def get_status(ch1, ch2, ch3):
+def get_status(ch1, ch2, ch3, ch4):
     status = []
     status.append(ch1.read())
     status.append(ch2.read())
     status.append(ch3.read())
+    status.append(ch4.read())
 
     return status
 
@@ -61,11 +62,13 @@ if __name__ == '__main__':
     ch1 = board.get_pin('d:9:o')
     ch2 = board.get_pin('d:8:o')
     ch3 = board.get_pin('d:7:o')
+    ch4 = board.get_pin('d:6:o')
 
     # initialize all channels
     ch1.write(0)
     ch2.write(0)
     ch3.write(0)
+    ch4.write(0)
 
     prompt = "> "
     while 1:
@@ -77,21 +80,27 @@ if __name__ == '__main__':
             reset(ch2)
         elif cmd == 'r3':
             reset(ch3)
+        elif cmd == 'r4':
+            reset(ch4)
         elif cmd == 'u1':
             up(ch1)
         elif cmd == 'u2':
             up(ch2)
         elif cmd == 'u3':
             up(ch3)
+        elif cmd == 'u4':
+            up(ch4)
         elif cmd == 'd1':
             down(ch1)
         elif cmd == 'd2':
             down(ch2)
         elif cmd == 'd3':
             down(ch3)
+        elif cmd == 'd4':
+            down(ch4)
         elif cmd == 's':
-            s = get_status(ch1, ch2, ch3)
-            for i in [0, 1, 2]:
+            s = get_status(ch1, ch2, ch3, ch4)
+            for i in [0, 1, 2, 3]:
                 print("ch{0}: {1}".
                         format(i+1, 'up' if s[i] == 0 else 'down'))
         elif cmd == 'h':
