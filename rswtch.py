@@ -23,12 +23,11 @@ def up(ch):
 def down(ch):
     ch.write(1)
 
-def get_status(ch1, ch2, ch3, ch4):
+def get_status(ch):
     status = []
-    status.append(ch1.read())
-    status.append(ch2.read())
-    status.append(ch3.read())
-    status.append(ch4.read())
+
+    for c in ch:
+        status.append(c.read())
 
     return status
 
@@ -59,47 +58,45 @@ if __name__ == '__main__':
     led.write(0)
 
     # configuring pins
-    ch1 = board.get_pin('d:9:o')
-    ch2 = board.get_pin('d:8:o')
-    ch3 = board.get_pin('d:7:o')
-    ch4 = board.get_pin('d:6:o')
+    chpins = ['d:9:o', 'd:8:o', 'd:7:o', 'd:6:o']
+    ch = []
+    for p in chpins:
+        ch.append(board.get_pin(p))
 
     # initialize all channels
-    ch1.write(0)
-    ch2.write(0)
-    ch3.write(0)
-    ch4.write(0)
+    for c in ch:
+        c.write(0)
 
     prompt = "> "
     while 1:
         cmd = raw_input(prompt)
 
         if cmd == 'r1':
-            reset(ch1)
+            reset(ch[0])
         elif cmd == 'r2':
-            reset(ch2)
+            reset(ch[1])
         elif cmd == 'r3':
-            reset(ch3)
+            reset(ch[2])
         elif cmd == 'r4':
-            reset(ch4)
+            reset(ch[3])
         elif cmd == 'u1':
-            up(ch1)
+            up(ch[0])
         elif cmd == 'u2':
-            up(ch2)
+            up(ch[1])
         elif cmd == 'u3':
-            up(ch3)
+            up(ch[2])
         elif cmd == 'u4':
-            up(ch4)
+            up(ch[3])
         elif cmd == 'd1':
-            down(ch1)
+            down(ch[0])
         elif cmd == 'd2':
-            down(ch2)
+            down(ch[1])
         elif cmd == 'd3':
-            down(ch3)
+            down(ch[2])
         elif cmd == 'd4':
-            down(ch4)
+            down(ch[3])
         elif cmd == 's':
-            s = get_status(ch1, ch2, ch3, ch4)
+            s = get_status(ch)
             for i in [0, 1, 2, 3]:
                 print("ch{0}: {1}".
                         format(i+1, 'up' if s[i] == 0 else 'down'))
