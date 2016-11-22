@@ -49,10 +49,11 @@ class Sh(cmd.Cmd):
     # help for each command
     def do_help(self, line):
         print('down n: where n is the channel number from 1 to 4')
-        print('up n: where n is the channel number from 1 to 4')
+        print('help: this help')
         print('reset n: where n is the channel number from 1 to 4')
         print('status: shows the status of all channels')
-        print('help: this help')
+        print('toggle n: where n is the channel number from 1 to 4')
+        print('up n: where n is the channel number from 1 to 4')
 
     ### commands
     # up
@@ -72,6 +73,16 @@ class Sh(cmd.Cmd):
 
         try:
             channels[c].down()
+        except KeyError:
+            print("no channel")
+
+    # toggle
+    def do_toggle(self, line):
+        parser = shlex.shlex(line)
+        c = parser.get_token()
+
+        try:
+            channels[c].toggle()
         except KeyError:
             print("no channel")
 
@@ -124,6 +135,12 @@ class Channel():
 
     def down(self):
         self.__pin.write(1)
+
+    def toggle(self):
+        if self.__pin.read() == 0:
+            self.__pin.write(1)
+	else:
+	    self.__pin.write(0)
 
     def reset(self):
         self.__pin.write(1)
