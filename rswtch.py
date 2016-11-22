@@ -153,7 +153,7 @@ if __name__ == '__main__':
 
     # try to get board firmata version
     # this fails most of the times
-    if args.w:
+    if args.v:
         v = board.get_firmata_version()
         try:
             print("{0}.{1}".format(v[0], v[1]))
