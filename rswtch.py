@@ -4,7 +4,6 @@
 # . include README.md documentation
 # . include sample for rswtch.conf
 # . include -f parameter to choose conf file
-# . include param to show board firmata version
 # . improve readability of commands in Sh
 # . add annotation function to each channel
 # . include licenses in the files
@@ -117,6 +116,8 @@ def status():
 
 if __name__ == '__main__':
     opts = argparse.ArgumentParser()
+    opts.add_argument("-v", action="store_true",
+            help="shows board Firmata firmware version")
     opts.add_argument("dev", help="serial device")
     args = opts.parse_args()
 
@@ -129,11 +130,14 @@ if __name__ == '__main__':
 
     # try to get board firmata version
     # this fails most of the times
-    v = board.get_firmata_version()
-    try:
-        print("board firmata version: {0}.{1}".format(v[0], v[1]))
-    except (NameError, TypeError):
-        print("could not get board firmata version")
+    if args.w:
+        v = board.get_firmata_version()
+        try:
+            print("{0}.{1}".format(v[0], v[1]))
+            exit(0)
+        except (NameError, TypeError):
+            print("could not get board firmata version")
+            exit(1)
 
     # handle configuration file
     config = Config()
