@@ -28,7 +28,6 @@
 # . include README.md documentation
 # . include sample for rswtch.conf
 # . improve readability of commands in Sh
-# . add annotation function to each channel
 
 import argparse
 import cmd
@@ -95,6 +94,15 @@ class Sh(cmd.Cmd):
     def do_status(self, line):
         status()
 
+    def do_annotate(self, line):
+        parser = shlex.shlex(line, posix=True)
+        c = parser.get_token()
+
+        try:
+            channels[c].annotation = parser.get_token()
+        except KeyError:
+            print("no channel")
+
     # quit
     def do_quit(self, line):
         exit(0)
@@ -111,6 +119,7 @@ class Channel():
     def __init__(self, pin, boardname):
         self.__pin = pin
         self.boardname = boardname
+        self.annotation = None
 
         # up by default
         self.__pin.write(0)
@@ -131,10 +140,16 @@ class Channel():
         return 'up' if self.__pin.read() == 0 else 'down'
 
 def status():
-    print("channel1: {0} ({1})".format(ch1.status, ch1.boardname))
-    print("channel2: {0} ({1})".format(ch2.status, ch2.boardname))
-    print("channel3: {0} ({1})".format(ch3.status, ch3.boardname))
-    print("channel4: {0} ({1})".format(ch4.status, ch4.boardname))
+    print("{0:>2} {1:<6} {2:<20.20} {3:<40.40}"
+            .format("CH", "STATUS", "BOARD", "ANNOTATION"))
+    print("{0:>2} {1:<6} {2:<20.20} {3:<40.40}"
+            .format("1", ch1.status, ch1.boardname, ch1.annotation))
+    print("{0:>2} {1:<6} {2:<20.20} {3:<40.40}"
+            .format("2", ch2.status, ch2.boardname, ch2.annotation))
+    print("{0:>2} {1:<6} {2:<20.20} {3:<40.40}"
+            .format("3", ch3.status, ch3.boardname, ch3.annotation))
+    print("{0:>2} {1:<6} {2:<20.20} {3:<40.40}"
+            .format("4", ch4.status, ch4.boardname, ch4.annotation))
 
 if __name__ == '__main__':
     opts = argparse.ArgumentParser()
