@@ -1,11 +1,87 @@
 #!/usr/bin/env python2.7
+#
+# TODO:
+# . include README.md documentation
+# . include sample for rswtch.conf
+# . include -f parameter to choose conf file
+# . include param to show board firmata version
+# . improve readability of commands in Sh
+# . add annotation function to each channel
+# . include licenses in the files
 
 import argparse
+import cmd
+import signal
+import shlex
 from time import sleep
 
 from pyfirmata import Arduino, serial
 
 from conf import Config
+
+
+class Sh(cmd.Cmd):
+    prompt = 'rswtch> '
+    intro = 'type \'help\' to see available commands'
+
+    def default(self, line):
+        print(line + ": not found")
+
+    def do_EOF(self, line):
+        exit(0)
+
+    # overwrite help, since commands are simple, do not need independent
+    # help for each command
+    def do_help(self, line):
+        print('down n: where n is the channel number from 1 to 4')
+        print('up n: where n is the channel number from 1 to 4')
+        print('reset n: where n is the channel number from 1 to 4')
+        print('status: shows the status of all channels')
+        print('help: this help')
+
+    ### commands
+    # up
+    def do_up(self, line):
+        parser = shlex.shlex(line)
+        c = parser.get_token()
+
+        try:
+            channels[c].up()
+        except KeyError:
+            print("no channel")
+
+    # down
+    def do_down(self, line):
+        parser = shlex.shlex(line)
+        c = parser.get_token()
+
+        try:
+            channels[c].down()
+        except KeyError:
+            print("no channel")
+
+    # reset
+    def do_reset(self, line):
+        parser = shlex.shlex(line)
+        c = parser.get_token()
+
+        try:
+            channels[c].reset()
+        except KeyError:
+            print("no channel")
+
+    # status
+    def do_status(self, line):
+        status()
+
+    # quit
+    def do_quit(self, line):
+        exit(0)
+
+    # handle ^C
+    @staticmethod
+    def handle_sigint(signum, frame):
+        exit(0)
 
 
 class Channel():
@@ -44,9 +120,7 @@ if __name__ == '__main__':
     opts.add_argument("dev", help="serial device")
     args = opts.parse_args()
 
-    # intro
-    print("rswtch, type 'h' to see the available commands")
-    print("initializing firmata library")
+    # init Firmata module
     try:
         board = Arduino(args.dev)
     except serial.serialutil.SerialException:
@@ -74,44 +148,8 @@ if __name__ == '__main__':
     ch3 = Channel(board.get_pin('d:7:o'), config.get_boardname(3))
     ch4 = Channel(board.get_pin('d:6:o'), config.get_boardname(4))
 
-    prompt = "> "
-    while 1:
-        cmd = raw_input(prompt)
+    channels = {'1': ch1, '2': ch2, '3': ch3, '4': ch4}
 
-        if cmd == 'r1':
-            ch1.reset()
-        elif cmd == 'r2':
-            ch2.reset()
-        elif cmd == 'r3':
-            ch3.reset()
-        elif cmd == 'r4':
-            ch4.reset()
-        elif cmd == 'u1':
-            ch1.up()
-        elif cmd == 'u2':
-            ch2.up()
-        elif cmd == 'u3':
-            ch3.up()
-        elif cmd == 'u4':
-            ch4.up()
-        elif cmd == 'd1':
-            ch1.down()
-        elif cmd == 'd2':
-            ch2.down()
-        elif cmd == 'd3':
-            ch3.down()
-        elif cmd == 'd4':
-            ch4.down()
-        elif cmd == 's':
-            status()
-        elif cmd == 'h':
-            print("d{ch}: down channel, e.g. d1 to put channel 1 down")
-            print("u{ch}: up channel, e.g. u1 to put channel 1 up")
-            print("r{ch}: reset channel, e.g. r1 to reset channel 1")
-            print("s: status of all channels")
-            print("h: this help")
-            print("q: quit")
-        elif cmd == 'q':
-            exit(0)
-        else:
-            print('invalid command')
+    # start shell
+    signal.signal(signal.SIGINT, Sh.handle_sigint)
+    Sh().cmdloop()
