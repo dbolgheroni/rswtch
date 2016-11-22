@@ -27,7 +27,6 @@
 # TODO:
 # . include README.md documentation
 # . include sample for rswtch.conf
-# . include -f parameter to choose conf file
 # . improve readability of commands in Sh
 # . add annotation function to each channel
 
@@ -141,6 +140,8 @@ if __name__ == '__main__':
     opts = argparse.ArgumentParser()
     opts.add_argument("-v", action="store_true",
             help="shows board Firmata firmware version")
+    opts.add_argument("-f",
+            help="specify config file")
     opts.add_argument("dev", help="serial device")
     args = opts.parse_args()
 
@@ -163,7 +164,10 @@ if __name__ == '__main__':
             exit(1)
 
     # handle configuration file
-    config = Config()
+    if args.f:
+	config = Config(args.f)
+    else:
+	config = Config()
 
     # turn off board led
     led = board.get_pin('d:13:o')
