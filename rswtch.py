@@ -48,13 +48,14 @@ class Sh(cmd.Cmd):
     # overwrite help, since commands are simple, do not need independent
     # help for each command
     def do_help(self, line):
-        print("{0:<8.8} {1}".format("COMMAND", "DESCRIPTION"))
-        print("{0:<8.8} {1}".format("down n", "turn off the n channel"))
-        print("{0:<8.8} {1}".format("help", "this help"))
-        print("{0:<8.8} {1}".format("reset n", "turn the n channel off and on again after 2 seconds"))
-        print("{0:<8.8} {1}".format("status", "display the status of all channels, including annotations"))
-        print("{0:<8.8} {1}".format("toggle n", "turn the n channel off if its on, and vice-versa"))
-        print("{0:<8.8} {1}".format("up n", "turn on the n channel"))
+        print("{0:<16} {1}".format("COMMAND", "DESCRIPTION"))
+        print("{0:<16} {1}".format("annotate n \"c\"", "annotate c in channel n (use quotes)"))
+        print("{0:<16} {1}".format("down n", "turn off the n channel"))
+        print("{0:<16} {1}".format("help", "this help"))
+        print("{0:<16} {1}".format("reset n", "turn the n channel off and on again after 2 seconds"))
+        print("{0:<16} {1}".format("status", "display the status of all channels, including annotations"))
+        print("{0:<16} {1}".format("toggle n", "turn the n channel off if its on, and vice-versa"))
+        print("{0:<16} {1}".format("up n", "turn on the n channel"))
 
     ### commands
     # up
